@@ -1,0 +1,16 @@
+# A deliberately tiny run: one consumer GPU (8 GB), a couple of hours.
+model_id = "Qwen/Qwen3-1.7B"
+harnesses = ["json", "react_xml", "pycall"]   # plaintext is held out
+grouping = "task_harness"                     # see docs/adr/0003
+steps = 24
+tasks_per_step = 6
+group_size = 4
+learning_rate = 5e-5
+beta = 0.02
+lora_r = 16
+lora_alpha = 32
+temperature = 0.8  # 1.0 left most groups all-fail (no signal)
+max_new_tokens = 160
+gen_batch_size = 16
+seed = 0
+out_dir = "runs/grpo"

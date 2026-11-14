@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>writegate-rl results</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f5f2; --surface: #fcfcfb; --ink: #0b0b0b; --ink2: #52514e; --muted: #7a7974;
+    --line: #e4e3df; --accent: #2a78d6; --good: #0a7d36; --bad: #c4322f; --warn: #a86400;
+    --code: #f0efea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #121211; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #8f8e86;
+      --line: #33332f; --accent: #3987e5; --good: #3fb56b; --bad: #e66767; --warn: #e0a43a;
+      --code: #232321;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #8f8e86;
+    --line: #33332f; --accent: #3987e5; --good: #3fb56b; --bad: #e66767; --warn: #e0a43a;
+    --code: #232321;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h2 { font-size: 19px; margin: 40px 0 12px; }
+  p.lede { color: var(--ink2); max-width: 760px; margin: 0 0 20px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+          padding: 16px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .tile .v { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .tile .k { color: var(--ink2); font-size: 13px; }
+  .chart { overflow-x: auto; margin: 12px 0; }
+  .chart svg { max-width: 100%; height: auto; display: block; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--ink2); font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ink2); font-size: 14px; }
+  .flow span.b { background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+                 padding: 4px 10px; color: var(--ink); }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
+  select { font: inherit; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line);
+           background: var(--surface); color: var(--ink); }
+  .explorer { display: grid; grid-template-columns: minmax(240px, 340px) 1fr; gap: 12px; }
+  @media (max-width: 760px) { .explorer { grid-template-columns: 1fr; } }
+  .list { max-height: 640px; overflow-y: auto; padding: 0; }
+  .list button { display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line);
+                 background: transparent; color: var(--ink); padding: 8px 12px; cursor: pointer; font: inherit; font-size: 13px; }
+  .list button:hover, .list button[aria-current="true"] { background: var(--code); }
+  .pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px;
+          border: 1px solid var(--line); color: var(--ink2); }
+  .ok { color: var(--good); } .no { color: var(--bad); } .meh { color: var(--warn); }
+  pre { background: var(--code); border-radius: 6px; padding: 8px 10px; white-space: pre-wrap;
+        word-break: break-word; font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin: 4px 0; }
+  .turn { border-left: 3px solid var(--line); padding-left: 10px; margin: 10px 0; }
+  .turn.blocked { border-color: var(--bad); }
+  .turn.perr { border-color: var(--warn); }
+  .muted { color: var(--muted); font-size: 13px; }
+  .toggle { float: right; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <button class="toggle pill" id="theme" type="button">theme</button>
+  <h1>writegate-rl</h1>
+  <p class="lede">Multi-harness RL for agents that write to a system of record. The model proposes; the
+    harness decides. Every change passes through one fail-closed write gate, and every result below is read
+    back from the ledger rather than taken from what the agent said.</p>
+  <div class="flow card">
+    <span class="b">model reply</span>→<span class="b">inner harness parses (json / xml / pycall / plaintext)</span>→
+    <span class="b">quote: exact diff + fingerprint + tier</span>→<span class="b">sign (policy or human)</span>→
+    <span class="b">execute only the signed payload</span>→<span class="b">read the ledger back</span>
+  </div>
+
+  <h2>Headline</h2>
+  <div class="tiles" id="tiles"></div>
+
+  <h2>Accuracy by system</h2>
+  <div class="card chart"><!--__CHART_PASS__--></div>
+  <div class="card chart"><!--__CHART_COST__--></div>
+  <div class="card chart" id="trainchart"><!--__CHART_TRAIN__--></div>
+
+  <h2>All metrics</h2>
+  <div class="filters"><select id="scope"><option value="seen">seen harnesses</option>
+    <option value="held-out">held-out harness</option><option value="all">all</option></select></div>
+  <div class="card scroll"><table id="metrics"></table></div>
+
+  <h2>Paired comparisons</h2>
+  <div class="card scroll"><table id="pairs"></table></div>
+
+  <h2>Failure clusters</h2>
+  <div class="card scroll"><table id="clusters"></table></div>
+
+  <h2>Trajectory explorer</h2>
+  <p class="muted">Every episode as the harness saw it: model replies, what came back, and the append-only decision log.</p>
+  <div class="filters">
+    <select id="f-system"></select><select id="f-harness"></select>
+    <select id="f-kind"></select><select id="f-outcome"></select>
+  </div>
+  <div class="explorer">
+    <div class="card list" id="list"></div>
+    <div class="card" id="detail"><span class="muted">Pick an episode.</span></div>
+  </div>
+  <footer>Built by <code>mhrl site</code> from <code>results/</code>. Numbers are measured on the test split; see REPORT.md for method.</footer>
+</main>
+<script>
+const DATA = /*__DATA__*/null;
+const L = DATA.labels, S = DATA.summary;
+const pct = v => v == null ? "–" : (100 * v).toFixed(1) + "%";
+const num = v => v == null ? "–" : Number(v).toLocaleString(undefined, {maximumFractionDigits: 0});
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+
+try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+document.getElementById("theme").onclick = () => {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const cur = document.documentElement.dataset.theme || (dark ? "dark" : "light");
+  const next = cur === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("theme", next); } catch (e) {}
+};
+
+function row(sys, scope) { return (S.summaries[scope] || []).find(r => r.system === sys); }
+(function tiles() {
+  const out = [];
+  const best = (S.summaries.seen || []).filter(r => r.system !== "compiled").sort((a, b) => b.pass_rate - a.pass_rate)[0];
+  if (best) out.push([pct(best.pass_rate), `best agent (${L[best.system]}) on seen harnesses`]);
+  const rl = row("rl", "held-out"), base = row("base", "held-out");
+  if (rl && base) out.push([(rl.pass_rate - base.pass_rate >= 0 ? "+" : "") + (100 * (rl.pass_rate - base.pass_rate)).toFixed(1) + " pp", "RL vs base on the held-out harness"]);
+  const routed = row("routed", "seen");
+  if (routed) out.push([num(routed.tokens_per_accepted), "tokens per accepted output, routed hybrid"]);
+  const stopped = DATA.episodes.reduce((n, e) => n + e.log.filter(([ev, d]) => ev === "gate" && !["executed", "replayed"].includes(d.status)).length, 0);
+  out.push([String(stopped), "write attempts stopped by the gate (explorer sample)"]);
+  out.push([String(DATA.episodes.length), "episodes in the explorer"]);
+  document.getElementById("tiles").innerHTML = out.map(([v, k]) => `<div class="card tile"><div class="v">${v}</div><div class="k">${esc(k)}</div></div>`).join("");
+})();
+
+function metrics() {
+  const scope = document.getElementById("scope").value;
+  const head = ["System", "n", "Solved", "95% CI", "pass^k", "Turns", "Blocked", "Injection followed", "Skip/needless esc.", "Tokens/accepted", "$/1k accepted"];
+  const rows = (S.summaries[scope] || []).map(r => [L[r.system], r.n, pct(r.pass_rate), `${pct(r.ci_low)}–${pct(r.ci_high)}`, pct(r.pass_hat_k), r.mean_acts_solved.toFixed(2), pct(r.blocked_rate), pct(r.injection_attempt_rate), pct(r.skip_or_escalate_rate), num(r.tokens_per_accepted), r.usd_per_1k_accepted == null ? "–" : "$" + r.usd_per_1k_accepted.toFixed(3)]);
+  document.getElementById("metrics").innerHTML = table(head, rows);
+}
+function table(head, rows) {
+  if (!rows.length) return `<tbody><tr><td class="muted">Nothing to show yet.</td></tr></tbody>`;
+  return `<thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+}
+document.getElementById("scope").onchange = metrics; metrics();
+document.getElementById("pairs").innerHTML = table(["A → B", "Scope", "Cases", "Only A", "Only B", "Δ (B−A)", "95% CI", "McNemar p"],
+  S.comparisons.map(c => [`${L[c.a]} → ${L[c.b]}`, c.scope, c.n_cases, c.only_a, c.only_b, (c.diff >= 0 ? "+" : "") + (100 * c.diff).toFixed(1) + " pp", `${(100 * c.diff_low).toFixed(1)} to ${(100 * c.diff_high).toFixed(1)}`, c.p_value.toPrecision(3)]));
+document.getElementById("clusters").innerHTML = table(["System", "Outcome", "Count", "Share of failures", "Example"],
+  Object.entries(S.clusters).flatMap(([sys, rows]) => rows.map(r => [L[sys] || sys, r.outcome, r.count, pct(r.share), `${r.example_task} (${r.example_harness})`])));
+if (!S.training.length) document.getElementById("trainchart").style.display = "none";
+
+const F = {system: "f-system", harness: "f-harness", task_kind: "f-kind", outcome: "f-outcome"};
+for (const [field, id] of Object.entries(F)) {
+  const vals = [...new Set(DATA.episodes.map(e => e[field]))].sort();
+  document.getElementById(id).innerHTML = `<option value="">all ${{system: "systems", harness: "harnesses", task_kind: "kinds", outcome: "outcomes"}[field]}</option>` + vals.map(v => `<option value="${esc(v)}">${esc(field === "system" ? (L[v] || v) : v)}</option>`).join("");
+  document.getElementById(id).onchange = renderList;
+}
+function cls(o) { return o === "solved" ? "ok" : (o === "skipped" ? "meh" : "no"); }
+function renderList() {
+  const want = Object.fromEntries(Object.entries(F).map(([f, id]) => [f, document.getElementById(id).value]));
+  const eps = DATA.episodes.filter(e => Object.entries(want).every(([f, v]) => !v || String(e[f]) === v)).slice(0, 300);
+  const list = document.getElementById("list");
+  list.innerHTML = eps.map((e, i) => `<button data-i="${DATA.episodes.indexOf(e)}"><b>${esc(e.task_id)}</b> <span class="pill">${esc(e.harness)}</span><br><span class="muted">${esc(L[e.system] || e.system)} · s${e.sample}</span> <span class="${cls(e.outcome)}">${esc(e.outcome)}</span></button>`).join("") || `<p class="muted" style="padding:12px">No episodes match.</p>`;
+  const buttons = list.querySelectorAll("button");
+  const select = b => { buttons.forEach(x => x.removeAttribute("aria-current")); b.setAttribute("aria-current", "true"); show(DATA.episodes[+b.dataset.i]); };
+  buttons.forEach(b => b.onclick = () => select(b));
+  if (buttons.length) select(buttons[0]);
+}
+function show(e) {
+  const turns = e.turns.map((t, i) => `<div class="turn ${t.blocked ? "blocked" : ""} ${t.parse_error ? "perr" : ""}"><div class="muted">${i + 1}. ${t.kind === "act" ? "model" : esc(t.kind)}${t.blocked ? ' · <span class="no">blocked by the gate</span>' : ""}${t.parse_error ? ' · <span class="meh">parse error</span>' : ""}</div><pre>${esc(t.text)}</pre>${t.feedback ? `<div class="muted">↳ harness returned</div><pre>${esc(t.feedback)}</pre>` : ""}</div>`).join("");
+  const log = e.log.map(([ev, d]) => `<tr><td>${esc(ev)}</td><td style="text-align:left;white-space:normal">${esc(ev === "gate" ? `${d.status} · ${d.tool} ${JSON.stringify(d.args)} · [${d.tier || "-"}] ${d.message}` : JSON.stringify(d))}</td></tr>`).join("");
+  document.getElementById("detail").innerHTML = `<div><b>${esc(e.instruction)}</b></div>
+    <div class="muted">${esc(L[e.system] || e.system)} · harness ${esc(e.harness)} · ${esc(e.task_kind)} (${esc(e.phrasing)}) · route ${esc(e.route)} · ${num(e.tokens)} tokens</div>
+    <div style="margin:8px 0">verdict <b class="${cls(e.outcome)}">${esc(e.outcome)}</b> · reward ${Number(e.reward).toFixed(3)} · ${e.acts} turns</div>
+    ${turns}<div class="muted" style="margin-top:12px">decision log (append-only)</div><div class="scroll"><table>${log}</table></div>`;
+}
+renderList();
+</script>
+</body>
+</html>

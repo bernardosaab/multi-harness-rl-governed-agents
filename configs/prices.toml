@@ -1,0 +1,5 @@
+# Assumed serving price for a ~2B open model on a hosted endpoint, USD per million tokens.
+# This is an assumption for comparing systems, not a quote. Prompt tokens are counted on
+# every turn (no prefix caching), which overstates absolute cost for every agent equally.
+input_per_m = 0.10
+output_per_m = 0.40
