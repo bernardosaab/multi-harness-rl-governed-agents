@@ -21,31 +21,31 @@
 <line class="grid" x1="150.0" x2="150.0" y1="52" y2="212"/>
 <text x="150.0" y="226" text-anchor="middle">0</text>
 <line class="grid" x1="275.0" x2="275.0" y1="52" y2="212"/>
-<text x="275.0" y="226" text-anchor="middle">2,000</text>
+<text x="275.0" y="226" text-anchor="middle">2,250</text>
 <line class="grid" x1="400.0" x2="400.0" y1="52" y2="212"/>
-<text x="400.0" y="226" text-anchor="middle">4,000</text>
+<text x="400.0" y="226" text-anchor="middle">4,500</text>
 <line class="grid" x1="525.0" x2="525.0" y1="52" y2="212"/>
-<text x="525.0" y="226" text-anchor="middle">6,000</text>
+<text x="525.0" y="226" text-anchor="middle">6,750</text>
 <line class="grid" x1="650.0" x2="650.0" y1="52" y2="212"/>
-<text x="650.0" y="226" text-anchor="middle">8,000</text>
+<text x="650.0" y="226" text-anchor="middle">9,000</text>
 <text class="label" x="140" y="68.0" text-anchor="end">Compiled loop</text>
 <g><title>0 tokens per accepted output</title><rect x="150" y="58" width="2.0" height="12" rx="3" fill="var(--s1)"/>
 <rect x="150" y="57" width="500" height="14" fill="transparent"/></g>
 <text x="156.0" y="68">0 (no model)</text>
 <text class="label" x="140" y="98.0" text-anchor="end">Base model</text>
-<g><title>7,069 tokens per accepted output</title><rect x="150" y="88" width="441.8" height="12" rx="3" fill="var(--s1)"/>
+<g><title>6,897 tokens per accepted output</title><rect x="150" y="88" width="383.1" height="12" rx="3" fill="var(--s1)"/>
 <rect x="150" y="87" width="500" height="14" fill="transparent"/></g>
-<text x="597.8" y="98">7,069</text>
+<text x="539.1" y="98">6,897</text>
 <text class="label" x="140" y="128.0" text-anchor="end">Loop engineering</text>
-<g><title>7,971 tokens per accepted output</title><rect x="150" y="118" width="498.2" height="12" rx="3" fill="var(--s1)"/>
+<g><title>8,504 tokens per accepted output</title><rect x="150" y="118" width="472.5" height="12" rx="3" fill="var(--s1)"/>
 <rect x="150" y="117" width="500" height="14" fill="transparent"/></g>
-<text x="654.2" y="128">7,971</text>
+<text x="628.5" y="128">8,504</text>
 <text class="label" x="140" y="158.0" text-anchor="end">Multi-harness RL</text>
-<g><title>4,848 tokens per accepted output</title><rect x="150" y="148" width="303.0" height="12" rx="3" fill="var(--s1)"/>
+<g><title>4,492 tokens per accepted output</title><rect x="150" y="148" width="249.5" height="12" rx="3" fill="var(--s1)"/>
 <rect x="150" y="147" width="500" height="14" fill="transparent"/></g>
-<text x="459.0" y="158">4,848</text>
+<text x="405.5" y="158">4,492</text>
 <text class="label" x="140" y="188.0" text-anchor="end">Routed hybrid</text>
-<g><title>2,318 tokens per accepted output</title><rect x="150" y="178" width="144.9" height="12" rx="3" fill="var(--s1)"/>
+<g><title>2,256 tokens per accepted output</title><rect x="150" y="178" width="125.3" height="12" rx="3" fill="var(--s1)"/>
 <rect x="150" y="177" width="500" height="14" fill="transparent"/></g>
-<text x="300.9" y="188">2,318</text>
+<text x="281.3" y="188">2,256</text>
 </svg>

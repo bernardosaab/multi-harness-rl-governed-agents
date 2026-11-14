@@ -51,30 +51,30 @@
 <rect x="150" y="115" width="500" height="14" fill="transparent"/></g>
 <text x="305.2" y="126">17.9%</text>
 <text class="label" x="140" y="163.0" text-anchor="end">Loop engineering</text>
-<g><title>seen: 29.8% solved, 95% CI 23.4%-37.1%, n=168</title><rect x="150" y="146" width="148.8" height="12" rx="3" fill="var(--s1)"/>
-<line class="ci" x1="266.8" x2="335.3" y1="152.0" y2="152.0"/><line class="ci" x1="266.8" x2="266.8" y1="148.0" y2="156.0"/><line class="ci" x1="335.3" x2="335.3" y1="148.0" y2="156.0"/>
+<g><title>seen: 28.6% solved, 95% CI 22.3%-35.8%, n=168</title><rect x="150" y="146" width="142.9" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="261.4" x2="329.1" y1="152.0" y2="152.0"/><line class="ci" x1="261.4" x2="261.4" y1="148.0" y2="156.0"/><line class="ci" x1="329.1" x2="329.1" y1="148.0" y2="156.0"/>
 <rect x="150" y="145" width="500" height="14" fill="transparent"/></g>
-<text x="341.3" y="156">29.8%</text>
-<g><title>held-out: 28.6% solved, 95% CI 18.4%-41.5%, n=56</title><rect x="150" y="160" width="142.9" height="12" rx="3" fill="var(--s2)"/>
-<line class="ci" x1="242.1" x2="357.4" y1="166.0" y2="166.0"/><line class="ci" x1="242.1" x2="242.1" y1="162.0" y2="170.0"/><line class="ci" x1="357.4" x2="357.4" y1="162.0" y2="170.0"/>
+<text x="335.1" y="156">28.6%</text>
+<g><title>held-out: 26.8% solved, 95% CI 17.0%-39.6%, n=56</title><rect x="150" y="160" width="133.9" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="234.8" x2="348.0" y1="166.0" y2="166.0"/><line class="ci" x1="234.8" x2="234.8" y1="162.0" y2="170.0"/><line class="ci" x1="348.0" x2="348.0" y1="162.0" y2="170.0"/>
 <rect x="150" y="159" width="500" height="14" fill="transparent"/></g>
-<text x="363.4" y="170">28.6%</text>
+<text x="354.0" y="170">26.8%</text>
 <text class="label" x="140" y="207.0" text-anchor="end">Multi-harness RL</text>
-<g><title>seen: 48.8% solved, 95% CI 41.4%-56.3%, n=168</title><rect x="150" y="190" width="244.0" height="12" rx="3" fill="var(--s1)"/>
-<line class="ci" x1="356.8" x2="431.5" y1="196.0" y2="196.0"/><line class="ci" x1="356.8" x2="356.8" y1="192.0" y2="200.0"/><line class="ci" x1="431.5" x2="431.5" y1="192.0" y2="200.0"/>
+<g><title>seen: 50.6% solved, 95% CI 43.1%-58.1%, n=168</title><rect x="150" y="190" width="253.0" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="365.5" x2="440.3" y1="196.0" y2="196.0"/><line class="ci" x1="365.5" x2="365.5" y1="192.0" y2="200.0"/><line class="ci" x1="440.3" x2="440.3" y1="192.0" y2="200.0"/>
 <rect x="150" y="189" width="500" height="14" fill="transparent"/></g>
-<text x="437.5" y="200">48.8%</text>
-<g><title>held-out: 16.1% solved, 95% CI 8.7%-27.8%, n=56</title><rect x="150" y="204" width="80.4" height="12" rx="3" fill="var(--s2)"/>
-<line class="ci" x1="193.5" x2="289.0" y1="210.0" y2="210.0"/><line class="ci" x1="193.5" x2="193.5" y1="206.0" y2="214.0"/><line class="ci" x1="289.0" x2="289.0" y1="206.0" y2="214.0"/>
+<text x="446.3" y="200">50.6%</text>
+<g><title>held-out: 14.3% solved, 95% CI 7.4%-25.7%, n=56</title><rect x="150" y="204" width="71.4" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="187.1" x2="278.7" y1="210.0" y2="210.0"/><line class="ci" x1="187.1" x2="187.1" y1="206.0" y2="214.0"/><line class="ci" x1="278.7" x2="278.7" y1="206.0" y2="214.0"/>
 <rect x="150" y="203" width="500" height="14" fill="transparent"/></g>
-<text x="295.0" y="214">16.1%</text>
+<text x="284.7" y="214">14.3%</text>
 <text class="label" x="140" y="251.0" text-anchor="end">Routed hybrid</text>
-<g><title>seen: 63.1% solved, 95% CI 55.6%-70.0%, n=168</title><rect x="150" y="234" width="315.5" height="12" rx="3" fill="var(--s1)"/>
-<line class="ci" x1="427.9" x2="500.1" y1="240.0" y2="240.0"/><line class="ci" x1="427.9" x2="427.9" y1="236.0" y2="244.0"/><line class="ci" x1="500.1" x2="500.1" y1="236.0" y2="244.0"/>
+<g><title>seen: 66.1% solved, 95% CI 58.6%-72.8%, n=168</title><rect x="150" y="234" width="330.4" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="443.1" x2="514.0" y1="240.0" y2="240.0"/><line class="ci" x1="443.1" x2="443.1" y1="236.0" y2="244.0"/><line class="ci" x1="514.0" x2="514.0" y1="236.0" y2="244.0"/>
 <rect x="150" y="233" width="500" height="14" fill="transparent"/></g>
-<text x="506.1" y="244">63.1%</text>
-<g><title>held-out: 53.6% solved, 95% CI 40.7%-66.0%, n=56</title><rect x="150" y="248" width="267.9" height="12" rx="3" fill="var(--s2)"/>
-<line class="ci" x1="353.5" x2="479.9" y1="254.0" y2="254.0"/><line class="ci" x1="353.5" x2="353.5" y1="250.0" y2="258.0"/><line class="ci" x1="479.9" x2="479.9" y1="250.0" y2="258.0"/>
+<text x="520.0" y="244">66.1%</text>
+<g><title>held-out: 55.4% solved, 95% CI 42.4%-67.6%, n=56</title><rect x="150" y="248" width="276.8" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="362.1" x2="488.1" y1="254.0" y2="254.0"/><line class="ci" x1="362.1" x2="362.1" y1="250.0" y2="258.0"/><line class="ci" x1="488.1" x2="488.1" y1="250.0" y2="258.0"/>
 <rect x="150" y="247" width="500" height="14" fill="transparent"/></g>
-<text x="485.9" y="258">53.6%</text>
+<text x="494.1" y="258">55.4%</text>
 </svg>

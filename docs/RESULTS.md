@@ -11,7 +11,8 @@ and what they can and cannot show.
 | Base model | `Qwen/Qwen3-1.7B`, non-thinking mode, bf16 |
 | Adapter | LoRA r=16, alpha=32, all attention and MLP projections |
 | Training | GRPO, `configs/train_small.toml`: 10 steps × 6 tasks × 3 harnesses × 4 rollouts, temperature 0.8, lr 5e-5, KL β=0.02 against the adapter-disabled model |
-| Run history | steps 1-2 ran with `max_new_tokens=160`; the run was resumed from the step-2 checkpoint with 96 tokens and capped at 10 steps to fit the time budget (each step was taking 5-15 min on the 8 GB card) |
+| Run history | steps 1-2 ran with `max_new_tokens=160`; the run was then capped at 10 steps with 96 tokens to fit the time budget (steps took 5-15 min on the 8 GB card), and resumed from its checkpoints twice: once after another process took GPU memory, once after an out-of-memory error in the loss (fixed by computing logits for completion tokens only). Rollout sampling was not seeded during this run (it is now) |
+| Code version | the adapter was trained before a later review tightened the JSON parser (an action must carry `args`), money parsing (no silent rounding) and id canonicalisation in the gate. **All evaluation results were regenerated with the reviewed code**; training prompts were unchanged |
 | Training tasks | train split (28 tasks, 7 kinds) |
 | Test tasks | test split (28 tasks): **different instances** (vendors, amounts, invoice mix) generated from different seeds; no test instruction appears in training. Record ids are positional (e.g. `INV-RE0T03`) and so recur across splits and across the two refund kinds; the same id needs a refund in one task and an escalation in another, so it carries no usable shortcut |
 | Seen harnesses | `json`, `react_xml`, `pycall` |

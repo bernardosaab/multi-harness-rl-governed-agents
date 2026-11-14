@@ -10,21 +10,21 @@ Episodes analysed: 924. Cost uses an assumed price of $0.1/M input and $0.4/M ou
 
 | System | n | Solved | 95% CI | pass^k | Turns (solved) | Blocked writes | Injection followed | Skip / needless escalation | Tokens / accepted | $ / 1k accepted |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Compiled loop | 28 | 57.1% | 39.1%-73.5% | 57.1% | 1.50 | 0.0% | 0.0% | 42.9% | 0 | 0.000 |
-| Base model | 168 | 33.9% | 27.2%-41.4% | 28.6% | 5.11 | 45.2% | 45.8% | 16.7% | 7,069 | 0.826 |
-| Loop engineering | 168 | 29.8% | 23.4%-37.1% | 28.6% | 3.32 | 57.1% | 50.0% | 11.9% | 7,971 | 0.892 |
-| Multi-harness RL | 168 | 48.8% | 41.4%-56.3% | 44.0% | 4.00 | 37.5% | 4.2% | 5.4% | 4,848 | 0.578 |
-| Routed hybrid | 168 | 63.1% | 55.6%-70.0% | 60.7% | 2.42 | 24.4% | 4.2% | 3.6% | 2,318 | 0.277 |
+| Compiled loop | 28 | 57.1% | 39.1%-73.5% | 57.1% | 2.25 | 0.0% | 0.0% | 42.9% | 0 | 0.000 |
+| Base model | 168 | 33.9% | 27.2%-41.4% | 28.6% | 4.89 | 46.4% | 45.8% | 16.1% | 6,897 | 0.808 |
+| Loop engineering | 168 | 28.6% | 22.3%-35.8% | 26.2% | 3.31 | 58.3% | 50.0% | 11.3% | 8,504 | 0.952 |
+| Multi-harness RL | 168 | 50.6% | 43.1%-58.1% | 42.9% | 3.78 | 36.9% | 0.0% | 3.6% | 4,492 | 0.535 |
+| Routed hybrid | 168 | 66.1% | 58.6%-72.8% | 63.1% | 3.14 | 23.8% | 4.2% | 1.8% | 2,256 | 0.269 |
 
 ## Held-out harness (plaintext, never trained on)
 
 | System | n | Solved | 95% CI | pass^k | Turns (solved) | Blocked writes | Injection followed | Skip / needless escalation | Tokens / accepted | $ / 1k accepted |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Compiled loop | 28 | 57.1% | 39.1%-73.5% | 57.1% | 1.50 | 0.0% | 0.0% | 42.9% | 0 | 0.000 |
-| Base model | 56 | 17.9% | 10.0%-29.8% | 17.9% | 6.20 | 80.4% | 37.5% | 0.0% | 8,287 | 0.929 |
-| Loop engineering | 56 | 28.6% | 18.4%-41.5% | 25.0% | 2.94 | 71.4% | 37.5% | 0.0% | 5,288 | 0.576 |
-| Multi-harness RL | 56 | 16.1% | 8.7%-27.8% | 14.3% | 6.89 | 82.1% | 0.0% | 0.0% | 8,307 | 0.935 |
-| Routed hybrid | 56 | 53.6% | 40.7%-66.0% | 53.6% | 2.50 | 46.4% | 0.0% | 0.0% | 1,496 | 0.166 |
+| Compiled loop | 28 | 57.1% | 39.1%-73.5% | 57.1% | 2.25 | 0.0% | 0.0% | 42.9% | 0 | 0.000 |
+| Base model | 56 | 17.9% | 10.0%-29.8% | 17.9% | 5.10 | 80.4% | 25.0% | 0.0% | 7,376 | 0.826 |
+| Loop engineering | 56 | 26.8% | 17.0%-39.6% | 25.0% | 2.93 | 69.6% | 50.0% | 1.8% | 6,379 | 0.697 |
+| Multi-harness RL | 56 | 14.3% | 7.4%-25.7% | 10.7% | 7.50 | 83.9% | 0.0% | 1.8% | 9,099 | 1.028 |
+| Routed hybrid | 56 | 55.4% | 42.4%-67.6% | 53.6% | 3.48 | 44.6% | 0.0% | 0.0% | 1,561 | 0.177 |
 
 ![cost](charts/cost.svg)
 
@@ -32,26 +32,38 @@ Episodes analysed: 924. Cost uses an assumed price of $0.1/M input and $0.4/M ou
 
 | A -> B | Scope | Cases | Only A | Only B | Delta (B - A) | 95% CI | McNemar p |
 |---|---|--:|--:|--:|--:|--:|--:|
-| Base model -> Loop engineering | seen | 168 | 25 | 18 | -4.2 pp | -11.9 to +3.0 | 0.36 |
-| Base model -> Loop engineering | held-out | 56 | 0 | 6 | +10.7 pp | +3.6 to +19.6 | 0.0312 |
-| Base model -> Multi-harness RL | seen | 168 | 9 | 34 | +14.9 pp | +7.7 to +22.0 | 0.00017 |
-| Base model -> Multi-harness RL | held-out | 56 | 2 | 1 | -1.8 pp | -7.1 to +3.6 | 1 |
-| Loop engineering -> Multi-harness RL | seen | 168 | 9 | 41 | +19.0 pp | +11.3 to +26.8 | 5.61e-06 |
-| Loop engineering -> Multi-harness RL | held-out | 56 | 8 | 1 | -12.5 pp | -23.2 to -3.6 | 0.0391 |
-| Multi-harness RL -> Routed hybrid | seen | 168 | 10 | 34 | +14.3 pp | +7.1 to +22.0 | 0.000388 |
-| Multi-harness RL -> Routed hybrid | held-out | 56 | 0 | 21 | +37.5 pp | +25.0 to +50.0 | 9.54e-07 |
+| Base model -> Loop engineering | seen | 168 | 23 | 14 | -5.4 pp | -16.1 to +5.4 | 0.188 |
+| Base model -> Loop engineering | held-out | 56 | 0 | 5 | +8.9 pp | +0.0 to +19.6 | 0.0625 |
+| Base model -> Multi-harness RL | seen | 168 | 11 | 39 | +16.7 pp | +6.5 to +27.4 | 9.02e-05 |
+| Base model -> Multi-harness RL | held-out | 56 | 3 | 1 | -3.6 pp | -12.5 to +3.6 | 0.625 |
+| Loop engineering -> Multi-harness RL | seen | 168 | 8 | 45 | +22.0 pp | +10.1 to +35.7 | 2.37e-07 |
+| Loop engineering -> Multi-harness RL | held-out | 56 | 8 | 1 | -12.5 pp | -26.8 to +0.0 | 0.0391 |
+| Multi-harness RL -> Routed hybrid | seen | 168 | 6 | 32 | +15.5 pp | +5.4 to +26.8 | 2.43e-05 |
+| Multi-harness RL -> Routed hybrid | held-out | 56 | 0 | 23 | +41.1 pp | +25.0 to +58.9 | 2.38e-07 |
+
+## The write gate
+
+Every gate decision across all 924 episodes. HARD or CRITICAL writes executed: **0**.
+
+| System | Executed (soft) | Idempotent replays | Stopped: hard tier | Stopped: critical tier | Stopped: policy violation | Stopped: invalid request | Stopped: gate error |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| Base model | 109 | 7 | 30 | 32 | 53 | 8 | 0 |
+| Compiled loop | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Loop engineering | 80 | 0 | 39 | 25 | 65 | 8 | 0 |
+| Multi-harness RL | 112 | 8 | 28 | 28 | 44 | 9 | 0 |
+| Routed hybrid | 137 | 3 | 14 | 15 | 30 | 6 | 0 |
 
 ## Failure clusters (error analysis)
 
-**Base model**: blocked_write 107 (68.2%), unneeded_escalation 28 (17.8%), injection_followed 14 (8.9%), parse_failure 7 (4.5%), cap_hit 1 (0.6%)
+**Base model**: blocked_write 110 (70.1%), unneeded_escalation 27 (17.2%), injection_followed 13 (8.3%), parse_failure 4 (2.5%), claimed_not_written 2 (1.3%), cap_hit 1 (0.6%)
 
 **Compiled loop**: skipped 12 (100.0%)
 
-**Loop engineering**: blocked_write 121 (76.6%), unneeded_escalation 20 (12.7%), injection_followed 15 (9.5%), claimed_not_written 2 (1.3%)
+**Loop engineering**: blocked_write 121 (75.2%), unneeded_escalation 20 (12.4%), injection_followed 16 (9.9%), cap_hit 2 (1.2%), claimed_not_written 1 (0.6%), parse_failure 1 (0.6%)
 
-**Multi-harness RL**: blocked_write 108 (81.2%), parse_failure 13 (9.8%), unneeded_escalation 9 (6.8%), claimed_not_written 2 (1.5%), injection_followed 1 (0.8%)
+**Multi-harness RL**: blocked_write 109 (83.2%), parse_failure 9 (6.9%), unneeded_escalation 7 (5.3%), claimed_not_written 4 (3.1%), cap_hit 2 (1.5%)
 
-**Routed hybrid**: blocked_write 66 (75.0%), unneeded_escalation 6 (6.8%), claimed_not_written 5 (5.7%), parse_failure 5 (5.7%), cap_hit 5 (5.7%), injection_followed 1 (1.1%)
+**Routed hybrid**: blocked_write 64 (78.0%), parse_failure 9 (11.0%), claimed_not_written 4 (4.9%), unneeded_escalation 3 (3.7%), cap_hit 1 (1.2%), injection_followed 1 (1.2%)
 
 ## Training
 
