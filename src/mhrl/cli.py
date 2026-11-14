@@ -145,7 +145,11 @@ def _ratchet(args: argparse.Namespace) -> int:
             args.harness,
             args.sample,
         ):
-            path = ratchet(rec, Path(args.out))
+            try:
+                path = ratchet(rec, Path(args.out))
+            except ValueError as e:
+                console.print(f"[red]{e}[/red]")
+                return 1
             console.print(f"[green]froze {rec['outcome']} case into {path}[/green]")
             return 0
     console.print("[red]no matching episode[/red]")

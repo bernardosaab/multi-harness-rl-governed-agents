@@ -18,7 +18,7 @@ from enum import StrEnum
 from typing import Protocol
 
 from mhrl.domain.ledger import Ledger
-from mhrl.domain.tasks import REFUND_LIMIT_CENTS
+from mhrl.domain.policy import REFUND_LIMIT_CENTS
 from mhrl.tools import registry
 from mhrl.tools.registry import ArgumentError, Permission
 from mhrl.types import Action, cents_to_str
@@ -129,7 +129,7 @@ class WriteGate:
 
     def quote(self, proposal: Action) -> Quote:
         """Validate and price a write. Raises on anything the policy forbids."""
-        action = registry.validate(proposal)
+        action = self._canonical(registry.validate(proposal))
         spec = registry.get(action.tool)
         if spec is None or spec.permission is not Permission.WRITE:
             raise ArgumentError(f"{action.tool!r} is not a write tool")
@@ -176,7 +176,7 @@ class WriteGate:
 
     def _replay(self, proposal: Action) -> GateDecision | None:
         try:
-            action = registry.validate(proposal)
+            action = self._canonical(registry.validate(proposal))
         except ArgumentError:
             return None
         key = hashlib.sha256(f"{self.run_id}:{fingerprint(action)}".encode()).hexdigest()
@@ -184,6 +184,25 @@ class WriteGate:
         if previous is None:
             return None
         return GateDecision(Status.REPLAYED, f"already applied: {previous}")
+
+    def _canonical(self, action: Action) -> Action:
+        """Replace record references with their canonical ids before fingerprinting.
+
+        Lookups are case-insensitive and vendors may be named, so without this the
+        same change spelled two ways would get two fingerprints and two idempotency
+        keys, and a retry could become a second write.
+        """
+        args = dict(action.args)
+        if "invoice_id" in args:
+            inv = self.ledger.invoice(str(args["invoice_id"]))
+            if inv is not None:
+                args["invoice_id"] = inv.id
+        if "vendor_id" in args:
+            ref = str(args["vendor_id"])
+            vendor = self.ledger.vendor(ref) or self.ledger.vendor_by_name(ref)
+            if vendor is not None:
+                args["vendor_id"] = vendor.id
+        return Action(action.tool, args)
 
     def _evaluate(self, action: Action) -> tuple[Tier, str]:
         led, a = self.ledger, action.args

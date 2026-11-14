@@ -13,7 +13,7 @@ and what they can and cannot show.
 | Training | GRPO, `configs/train_small.toml`: 10 steps × 6 tasks × 3 harnesses × 4 rollouts, temperature 0.8, lr 5e-5, KL β=0.02 against the adapter-disabled model |
 | Run history | steps 1-2 ran with `max_new_tokens=160`; the run was resumed from the step-2 checkpoint with 96 tokens and capped at 10 steps to fit the time budget (each step was taking 5-15 min on the 8 GB card) |
 | Training tasks | train split (28 tasks, 7 kinds) |
-| Test tasks | test split (28 tasks): **different instances** with different vendors, amounts and ids, generated from different seeds |
+| Test tasks | test split (28 tasks): **different instances** (vendors, amounts, invoice mix) generated from different seeds; no test instruction appears in training. Record ids are positional (e.g. `INV-RE0T03`) and so recur across splits and across the two refund kinds; the same id needs a refund in one task and an escalation in another, so it carries no usable shortcut |
 | Seen harnesses | `json`, `react_xml`, `pycall` |
 | Held-out harness | `plaintext`, never used in training |
 | Samples | 2 per (task, harness) for every model-based system, temperature 0.7; the compiled loop is deterministic |
@@ -23,13 +23,15 @@ and what they can and cannot show.
 
 - **Solved** means the verifier read the whole ledger back and found exactly the expected
   end state: the right change, no extra writes, and an escalation only when one was required.
-- **95% CI** is a Wilson interval over episodes. With n≈250 per row, intervals are roughly
-  ±6 percentage points around 50%. Differences smaller than that should be treated as
-  noise unless the paired test says otherwise.
+- **95% CI** is a Wilson interval over episodes (n = 168 on seen harnesses, 56 on the held-out
+  one), roughly ±7 and ±12 percentage points around 50%. It treats episodes as
+  independent; they are not (the same task recurs across harnesses and samples), so read it
+  as optimistic.
 - **Paired comparisons** use identical (task, harness, sample) cases. *Only A* and *Only B*
-  count the discordant cases. McNemar's p comes from them; the bootstrap interval is on
-  the difference in pass rate.
-- **pass^k** is the share of (task, harness) cases solved on *all three* samples, a
+  count the discordant cases and give McNemar's p (also per-episode, so approximate). The
+  **headline uncertainty is the bootstrap interval**, which resamples *whole tasks* (28
+  clusters) and so accounts for that correlation.
+- **pass^k** is the share of (task, harness) cases solved on *both* samples, a
   reliability measure, much stricter than the pass rate.
 - **Tokens per accepted output** divides *all* tokens spent (failures, retries,
   self-checks, prompts re-sent on every turn) by the number of solved episodes. It is the

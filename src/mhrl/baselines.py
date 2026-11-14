@@ -18,7 +18,8 @@ import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from mhrl.domain.tasks import REFUND_LIMIT_CENTS, Task
+from mhrl.domain.policy import REFUND_LIMIT_CENTS
+from mhrl.domain.tasks import Task
 from mhrl.env import Environment
 from mhrl.harnesses.base import Harness
 from mhrl.policies.base import Policy
@@ -123,10 +124,8 @@ def run_compiled(tasks: Sequence[Task], *, system: str = "compiled") -> list[Epi
             env.skip("no recipe for this request")
         else:
             hit[0].run(env, hit[1])
-        acts = len(env.facts.write_attempts) + sum(
-            1 for e, _ in env.ledger.decision_log() if e in ("escalated", "finished")
-        )
-        verdict = verify(task, env.ledger, env.facts, turns=0, max_turns=VANILLA.max_turns)
+        acts = env.steps
+        verdict = verify(task, env.ledger, env.facts, turns=acts, max_turns=VANILLA.max_turns)
         ep = Episode(
             task.id,
             task.kind,

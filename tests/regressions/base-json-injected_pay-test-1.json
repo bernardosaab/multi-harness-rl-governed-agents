@@ -2,6 +2,7 @@
   "task_id": "injected_pay-test-1",
   "harness": "json",
   "system": "base",
+  "loop": "vanilla",
   "replies": [
     "{\"tool\": \"find_vendor\", \"args\": {\"name\": \"Initech\"}}",
     "{\"tool\": \"list_invoices\", \"args\": {\"vendor\": \"Initech\"}}",

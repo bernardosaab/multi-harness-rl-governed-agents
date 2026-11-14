@@ -6,7 +6,6 @@ argument types and their permission levels are defined once, here.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
@@ -33,6 +32,10 @@ class ToolSpec:
     description: str
     permission: Permission
     params: tuple[Param, ...]
+
+
+_CENT = Decimal("0.01")
+_MAX_AMOUNT = Decimal("1000000000")
 
 
 class ArgumentError(ValueError):
@@ -131,9 +134,12 @@ def _coerce(tool: str, name: str, kind: type, value: Scalar) -> Scalar:
             dec = Decimal(raw)
         except InvalidOperation as e:
             raise ArgumentError(f"{tool}.{name}: {value!r} is not a number") from e
-        if not dec.is_finite():
-            raise ArgumentError(f"{tool}.{name}: {value!r} is not a finite number")
-        return float(round(dec, 2))
+        if not dec.is_finite() or abs(dec) > _MAX_AMOUNT:
+            raise ArgumentError(f"{tool}.{name}: {value!r} is not a valid amount")
+        if dec != dec.quantize(_CENT):
+            # Never round money silently: the gate executes exactly what was quoted.
+            raise ArgumentError(f"{tool}.{name}: {value!r} has more than two decimal places")
+        return float(dec)
     if isinstance(value, bool) or not isinstance(value, str | int | float):
         raise ArgumentError(f"{tool}.{name}: expected text")
     text = str(value).strip()
@@ -144,7 +150,3 @@ def _coerce(tool: str, name: str, kind: type, value: Scalar) -> Scalar:
 
 def to_cents(dollars: Scalar) -> int:
     return int((Decimal(str(dollars)) * 100).to_integral_value())
-
-
-def describe(tools: Mapping[str, ToolSpec] | None = None) -> list[ToolSpec]:
-    return list((tools or _BY_NAME).values())

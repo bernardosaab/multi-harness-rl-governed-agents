@@ -164,3 +164,27 @@ def test_decision_log_is_append_only(ledger: Ledger) -> None:
         ledger.raw_execute("DELETE FROM decision_log")
     with pytest.raises(sqlite3.DatabaseError, match="append-only"):
         ledger.raw_execute("UPDATE decision_log SET event = 'x'")
+
+
+def test_idempotency_survives_differently_spelled_ids(gate: WriteGate, ledger: Ledger) -> None:
+    """Ids are matched case-insensitively, so the fingerprint must use the canonical id:
+    otherwise a retry spelled 'inv-3' would be a second refund rather than a replay."""
+    first = gate.submit(Action("issue_refund", {"invoice_id": "INV-3", "amount": "100.00"}))
+    second = gate.submit(Action("issue_refund", {"invoice_id": " inv-3 ", "amount": 100}))
+    assert first.status is Status.EXECUTED
+    assert second.status is Status.REPLAYED
+    assert ledger.refunded_cents("INV-3") == 10_000
+
+
+def test_bank_change_quote_resolves_a_vendor_name_to_its_id(gate: WriteGate) -> None:
+    by_id = gate.quote(Action("update_bank_details", {"vendor_id": "V1", "account": "GB1"}))
+    by_name = gate.quote(Action("update_bank_details", {"vendor_id": "acme", "account": "GB1"}))
+    assert by_id.fingerprint == by_name.fingerprint
+
+
+@pytest.mark.parametrize("amount", ["120.005", "1e400", "nan", "-0.001"])
+def test_inexact_or_absurd_amounts_are_rejected_not_rounded(gate: WriteGate, amount: str) -> None:
+    """The gate executes exactly what was quoted, so it never silently rounds money."""
+    d = gate.submit(Action("issue_refund", {"invoice_id": "INV-3", "amount": amount}))
+    assert d.blocked
+    assert d.status in (Status.INVALID, Status.VIOLATION)

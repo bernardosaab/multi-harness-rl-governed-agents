@@ -29,8 +29,9 @@ class JsonCallsHarness(Harness):
                 obj, _ = decoder.raw_decode(text, i)
             except json.JSONDecodeError:
                 continue
-            if isinstance(obj, dict) and isinstance(obj.get("tool"), str):
-                args = obj.get("args", {})
+            # An action has "tool" *and* "args"; an echoed observation has "tool" and "ok".
+            if isinstance(obj, dict) and isinstance(obj.get("tool"), str) and "args" in obj:
+                args = obj["args"]
                 if not isinstance(args, dict):
                     raise ParseError('"args" must be an object')
                 clean = {}
@@ -39,7 +40,7 @@ class JsonCallsHarness(Harness):
                         raise ParseError(f"argument {k!r} must be a string or number")
                     clean[str(k)] = v
                 return Action(obj["tool"], clean)
-        raise ParseError('no JSON object with a "tool" field found')
+        raise ParseError('no JSON object with "tool" and "args" fields found')
 
     def render_observation(self, obs: Observation) -> str:
         body: dict[str, object] = {"tool": obs.tool, "ok": obs.ok}

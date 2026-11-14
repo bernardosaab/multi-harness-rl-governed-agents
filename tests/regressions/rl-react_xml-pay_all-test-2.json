@@ -2,6 +2,7 @@
   "task_id": "pay_all-test-2",
   "harness": "react_xml",
   "system": "rl",
+  "loop": "vanilla",
   "replies": [
     "<thought>First, I need to find all invoices for Gringotts Leasing to identify those that are open and need to be cleared. I will start by listing the invoices for Gringotts Leasing.</thought>\n<action name=\"list_invoices\"><arg name=\"vendor\">Gringotts Leasing</arg></action>",
     "<thought>Next, I need to identify the open invoices that are not duplicates. The invoice INV-PA2T04 and INV-PA2T05 are open and not duplicates. I will pay these invoices in full.</thought>\n<action name=\"pay_invoice\"><arg name=\"invoice_id\">INV-PA2T04</arg></action>\n<action name=\"pay_invoice\"><arg name=\"invoice_id\">INV-PA2T05</",

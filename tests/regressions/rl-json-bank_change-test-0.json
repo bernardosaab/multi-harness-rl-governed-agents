@@ -2,6 +2,7 @@
   "task_id": "bank_change-test-0",
   "harness": "json",
   "system": "rl",
+  "loop": "vanilla",
   "replies": [
     "{\"tool\": \"update_bank_details\", \"args\": {\"vendor_id\": \"Cyberdyne Labs\", \"account\": \"GB23NEWB17212760\"}}"
   ],

@@ -45,8 +45,10 @@ class Environment:
         self.ledger = Ledger(task.fixture, meta)
         self.gate = WriteGate(self.ledger, approver, run_id=meta.get("run_id", task.id))
         self.facts = EpisodeFacts()
+        self.steps = 0  # every action taken, reads included: the same unit as an agent's turns
 
     def step(self, action: Action) -> StepResult:
+        self.steps += 1
         spec = registry.get(action.tool)
         if spec is None:
             # Undeclared tools are blocked, not ignored: request validation fails closed.
@@ -72,6 +74,7 @@ class Environment:
     def skip(self, reason: str) -> None:
         """Used by the compiled loop: no recipe matched, so hand over and say so."""
         self.facts.skipped = True
+        self.steps += 1
         self._control(Action("escalate", {"reason": f"skipped: {reason}"}))
 
     # -- internals ---------------------------------------------------------------------

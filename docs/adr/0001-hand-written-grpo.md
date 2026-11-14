@@ -30,5 +30,6 @@ omitted rather than implemented and never exercised.
 - (+) Runs anywhere PyTorch runs.
 - (−) Slower than vLLM generation, with no sequence packing or async rollouts. Fine for
   a few hundred episodes per step; not for production-scale training.
-- **Revisit when:** moving to Linux plus a larger GPU budget. The `Policy` and `Episode`
-  interfaces were kept compatible with a TRL `rollout_func` for that move.
+- **Revisit when:** moving to Linux plus a larger GPU budget. Rollouts already record the
+  exact prompt and completion token ids per turn, which is what a TRL-style trainer
+  consumes; adapting `Episode` turns to it is the expected migration path (not yet done).

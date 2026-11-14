@@ -150,3 +150,12 @@ def test_router_sends_only_unmatched_tasks_to_the_agent(tasks: list[Task]) -> No
         task = next(t for t in test if t.id == e.task_id)
         assert e.route == ("compiled" if match(task) else "agent")
         assert e.success
+
+
+def test_compiled_loop_counts_reads_like_an_agent_does(by_id: dict[str, Task]) -> None:
+    """Turn counts must share a unit across systems: every action, reads included."""
+    [ep] = run_compiled([by_id["pay-test-0"]])
+    assert ep.outcome == "solved"
+    assert ep.acts == 3  # list_invoices, pay_invoice, finish (same as the reference plan)
+    [skipped] = run_compiled([by_id["pay_all-test-0"]])
+    assert skipped.acts == 1  # the visible hand-off

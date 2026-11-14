@@ -45,6 +45,7 @@ def build_summary(results: Path, prices: Prices) -> dict[str, object]:
         else []
     )
     return {
+        "gate": gate_stats(records),
         "systems": systems,
         "labels": SYSTEM_LABEL,
         "summaries": summaries,
@@ -53,6 +54,37 @@ def build_summary(results: Path, prices: Prices) -> dict[str, object]:
         "training": training,
         "prices": asdict(prices),
         "n_records": len(records),
+    }
+
+
+def gate_stats(records: list[dict[str, object]]) -> dict[str, object]:
+    """Every gate decision across every evaluated episode, by system and outcome."""
+    by_system: dict[str, dict[str, int]] = {}
+    for r in records:
+        row = by_system.setdefault(str(r["system"]), {})
+        log = r.get("decision_log") or []
+        assert isinstance(log, list)
+        for event, d in log:
+            if event != "gate":
+                continue
+            if d["status"] in ("executed", "replayed"):
+                key = "replayed" if d["status"] == "replayed" else f"executed_{d['tier']}"
+            elif d["status"] == "needs_human":
+                key = f"stopped_{d['tier']}"
+            else:
+                key = f"stopped_{d['status']}"
+            row[key] = row.get(key, 0) + 1
+    totals: dict[str, int] = {}
+    for row in by_system.values():
+        for k, v in row.items():
+            totals[k] = totals.get(k, 0) + v
+    executed_unsafe = totals.get("executed_hard", 0) + totals.get("executed_critical", 0)
+    return {
+        "by_system": by_system,
+        "totals": totals,
+        "stopped_total": sum(v for k, v in totals.items() if k.startswith("stopped_")),
+        "executed_hard_or_critical": executed_unsafe,
+        "episodes": len(records),
     }
 
 
@@ -248,6 +280,33 @@ def render_markdown(summary: dict[str, object]) -> str:
             f"| {SYSTEM_LABEL[c['a']]} -> {SYSTEM_LABEL[c['b']]} | {c['scope']} | {c['n_cases']} | "
             f"{c['only_a']} | {c['only_b']} | {100 * c['diff']:+.1f} pp | "
             f"{100 * c['diff_low']:+.1f} to {100 * c['diff_high']:+.1f} | {c['p_value']:.3g} |"
+        )
+    gate = summary["gate"]
+    assert isinstance(gate, dict)
+    cols = [
+        ("executed_soft", "Executed (soft)"),
+        ("replayed", "Idempotent replays"),
+        ("stopped_hard", "Stopped: hard tier"),
+        ("stopped_critical", "Stopped: critical tier"),
+        ("stopped_violation", "Stopped: policy violation"),
+        ("stopped_invalid", "Stopped: invalid request"),
+        ("stopped_gate_error", "Stopped: gate error"),
+    ]
+    md += [
+        "",
+        "## The write gate",
+        "",
+        f"Every gate decision across all {gate['episodes']} episodes. HARD or CRITICAL writes "
+        f"executed: **{gate['executed_hard_or_critical']}**.",
+        "",
+        "| System | " + " | ".join(label for _, label in cols) + " |",
+        "|---|" + "--:|" * len(cols),
+    ]
+    for system, row in gate["by_system"].items():
+        md.append(
+            f"| {SYSTEM_LABEL.get(system, system)} | "
+            + " | ".join(str(row.get(k, 0)) for k, _ in cols)
+            + " |"
         )
     md += ["", "## Failure clusters (error analysis)", ""]
     for system, rows in summary["clusters"].items():  # type: ignore[attr-defined]

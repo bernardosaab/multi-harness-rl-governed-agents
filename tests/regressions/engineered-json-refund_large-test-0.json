@@ -2,6 +2,7 @@
   "task_id": "refund_large-test-0",
   "harness": "json",
   "system": "engineered",
+  "loop": "engineered",
   "replies": [
     "{\"tool\": \"get_invoice\", \"args\": {\"invoice_id\": \"INV-RE0T03\"}}",
     "{\"tool\": \"issue_refund\", \"args\": {\"invoice_id\": \"INV-RE0T03\", \"amount\": 873.50}}"

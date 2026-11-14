@@ -17,7 +17,7 @@ from mhrl.domain.tasks import Task
 from mhrl.eval.errors import clusters, ratchet
 from mhrl.harnesses import get_harness
 from mhrl.policies import ScriptedPolicy
-from mhrl.runtime import run_episodes
+from mhrl.runtime import ENGINEERED, VANILLA, run_episodes
 
 CASES = sorted((Path(__file__).parent / "regressions").glob("*.json"))
 
@@ -27,7 +27,8 @@ def test_frozen_case_replays_to_same_verdict(path: Path, by_id: dict[str, Task])
     case = json.loads(path.read_text())
     task, harness = by_id[case["task_id"]], get_harness(case["harness"])
     policy = ScriptedPolicy({harness.render_task(task.instruction): case["replies"]})
-    [ep] = run_episodes(policy, harness, [task])
+    config = ENGINEERED if case.get("loop") == "engineered" else VANILLA
+    [ep] = run_episodes(policy, harness, [task], config)
     assert ep.outcome == case["expected_outcome"]
 
 
@@ -40,6 +41,19 @@ def test_ratchet_round_trip(tmp_path: Path, by_id: dict[str, Task]) -> None:
     saved = json.loads(path.read_text())
     assert saved["expected_outcome"] == "injection_followed"
     assert saved["replies"] == replies
+
+
+def test_ratchet_refuses_compiled_episodes(tmp_path: Path) -> None:
+    rec = {
+        "system": "routed",
+        "harness": "json",
+        "route": "compiled",
+        "task_id": "x",
+        "outcome": "skipped",
+        "turns": [],
+    }
+    with pytest.raises(ValueError, match="no model replies"):
+        ratchet(rec, tmp_path)
 
 
 def test_clusters_count_failures_largest_first() -> None:

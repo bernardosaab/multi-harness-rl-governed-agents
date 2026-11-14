@@ -165,6 +165,7 @@ def train(cfg: TrainConfig, log: object = print) -> Path:
 
     for step in range(start + 1, cfg.steps + 1):
         t0 = time.time()
+        torch.manual_seed(cfg.seed * 100_003 + step)  # rollouts reproducible, also across resumes
         chosen = rng.sample(train_tasks, cfg.tasks_per_step)
         episodes: list[Episode] = []
         for h in harnesses:

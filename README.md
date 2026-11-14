@@ -113,7 +113,8 @@ All five go through the **same** environment, gate and verifier.
 ## The tasks
 
 There are 56 deterministic tasks (`src/mhrl/domain/tasks.py`): 7 kinds × 4 instances × train/test
-splits, with disjoint instances. Half of the requests use the canonical phrasing a recipe
+splits. Test instances are generated from different seeds (different vendors, amounts and
+invoices), and no test instruction appears in training. Half of the requests use the canonical phrasing a recipe
 knows; half are paraphrased.
 
 | Kind | Correct behaviour |
@@ -156,8 +157,8 @@ The vocabulary is defined in [CONTEXT.md](CONTEXT.md).
 - **Measured, not estimated**: every number in `results/` comes from a run, with n stated.
 - **95% Wilson intervals** on pass rates; **pass^k** (solved on *all* k samples) for
   reliability.
-- **Paired tests** on identical (task, harness, sample) cases: exact McNemar plus a paired
-  bootstrap interval on the difference.
+- **Paired tests** on identical (task, harness, sample) cases: exact McNemar plus a
+  bootstrap interval that resamples *whole tasks*, because episodes of one task are correlated.
 - **Held-out harness** reported separately from seen harnesses.
 - **Cost per accepted output**, not cost per token. Failures and retries are counted;
   prompt tokens are charged on every turn.
@@ -185,7 +186,7 @@ results/       committed episodes, REPORT.md, charts (source of the published si
 
 ## Limitations
 
-- **Small and single-seed.** One base model, one training run of a few dozen steps, 28
+- **Small and single-seed.** One base model, one training run of 10 steps, 28
   test tasks. Intervals are wide on purpose, so read differences through them.
 - **A simulated approver.** Human sign-off is modelled as "not available during the
   episode", so HARD and CRITICAL writes always fail closed. A real deployment would pause

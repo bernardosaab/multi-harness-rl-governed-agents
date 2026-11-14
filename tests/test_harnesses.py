@@ -103,3 +103,12 @@ def test_system_prompt_shows_a_concrete_parseable_example(harness: Harness) -> N
 def test_harness_lookup_rejects_unknown_names() -> None:
     with pytest.raises(KeyError, match="unknown harness"):
         get_harness("telepathy")
+
+
+def test_json_skips_an_echoed_observation_and_reads_the_action() -> None:
+    h = get_harness("json")
+    echoed = h.render_observation(Observation("get_invoice", True, data={"invoice_id": "INV-1"}))
+    action = Action("pay_invoice", {"invoice_id": "INV-1"})
+    assert h.parse(f"{echoed}\n{h.format_action(action)}") == action
+    with pytest.raises(ParseError):
+        h.parse(echoed)

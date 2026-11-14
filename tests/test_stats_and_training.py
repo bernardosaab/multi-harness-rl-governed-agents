@@ -125,3 +125,15 @@ def test_generation_halves_the_batch_on_out_of_memory() -> None:
     out = policy.generate([[{"role": "user", "content": str(i)}] for i in range(8)])
     assert len(out) == 8
     assert sizes[0] == 8 and max(sizes[1:]) <= 4 and sizes.count(2) == 4
+
+
+def test_cluster_bootstrap_is_wider_when_episodes_are_correlated() -> None:
+    # 10 tasks x 4 perfectly correlated episodes: the information is 10 units, not 40.
+    a = [0.0] * 40
+    b = [1.0 if t % 2 else 0.0 for t in range(10) for _ in range(4)]
+    tasks = [t for t in range(10) for _ in range(4)]
+    _, lo_iid, hi_iid = paired_bootstrap_diff(a, b)
+    _, lo_cl, hi_cl = paired_bootstrap_diff(a, b, clusters=tasks)
+    assert (hi_cl - lo_cl) > (hi_iid - lo_iid)
+    with pytest.raises(ValueError, match="label every pair"):
+        paired_bootstrap_diff([0.0, 1.0], [1.0, 1.0], clusters=["x"])

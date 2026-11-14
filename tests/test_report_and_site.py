@@ -142,3 +142,14 @@ def test_cli_demo_and_ratchet(tmp_path: Path, results: Path) -> None:
         )
         == 1
     )
+
+
+def test_gate_stats_count_every_decision(results: Path) -> None:
+    from mhrl.eval.report import build_summary
+
+    gate = build_summary(results, Prices())["gate"]
+    assert isinstance(gate, dict)
+    assert gate["executed_hard_or_critical"] == 0
+    # The scripted "rl" stand-in skips lookups but never attempts a blocked write.
+    assert gate["stopped_total"] == 0
+    assert gate["totals"]["executed_soft"] > 0

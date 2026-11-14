@@ -166,7 +166,11 @@ def compare(records: Sequence[Record], a: str, b: str, scope: str) -> Comparison
         return None
     only_a = sum(ia[k] and not ib[k] for k in keys)
     only_b = sum(ib[k] and not ia[k] for k in keys)
-    diff, lo, hi = paired_bootstrap_diff([float(ia[k]) for k in keys], [float(ib[k]) for k in keys])
+    diff, lo, hi = paired_bootstrap_diff(
+        [float(ia[k]) for k in keys],
+        [float(ib[k]) for k in keys],
+        clusters=[k[0] for k in keys],  # resample whole tasks: their episodes are correlated
+    )
     return Comparison(
         a, b, scope, len(keys), only_a, only_b, mcnemar_exact(only_a, only_b), diff, lo, hi
     )

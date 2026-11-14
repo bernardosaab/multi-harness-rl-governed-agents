@@ -64,10 +64,13 @@ def ratchet(episode: Mapping[str, object], out_dir: Path, name: str | None = Non
     """Freeze an episode's replies + verdict into ``out_dir/<name>.json``."""
     turns = episode.get("turns") or []
     assert isinstance(turns, list)
+    if episode.get("harness") == "-" or episode.get("route") in ("compiled", "skipped"):
+        raise ValueError("compiled-loop episodes have no model replies to freeze")
     case = {
         "task_id": episode["task_id"],
         "harness": episode["harness"],
         "system": episode["system"],
+        "loop": "engineered" if episode["system"] == "engineered" else "vanilla",
         "replies": [t["text"] for t in turns],
         "expected_outcome": episode["outcome"],
         "note": "Frozen from an evaluation run by `mhrl ratchet`.",

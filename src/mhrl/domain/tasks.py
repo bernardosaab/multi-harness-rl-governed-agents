@@ -45,7 +45,6 @@ KINDS: tuple[Kind, ...] = (
     "pay_all",
 )
 MUST_ESCALATE: frozenset[str] = frozenset({"refund_large", "bank_change"})
-REFUND_LIMIT_CENTS = 50_000
 
 _VENDOR_NAMES = (
     "Acme Corp",
