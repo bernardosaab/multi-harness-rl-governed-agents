@@ -1,5 +1,5 @@
 [project]
-name = "writegate-rl"
+name = "multi-harness-rl-governed-agents"
 version = "0.1.0"
 description = "Multi-harness RL for agents that write to a system of record, behind a fail-closed write gate."
 readme = "README.md"

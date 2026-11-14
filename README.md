@@ -1,9 +1,9 @@
-# writegate-rl
+# Multi-harness RL for governed agents
 
 **Multi-harness RL for agents that write to a system of record, behind a fail-closed write gate.**
 
-[![ci](https://github.com/bernardosaab/writegate-rl/actions/workflows/ci.yml/badge.svg)](https://github.com/bernardosaab/writegate-rl/actions/workflows/ci.yml)
-[![pages](https://github.com/bernardosaab/writegate-rl/actions/workflows/pages.yml/badge.svg)](https://bernardosaab.github.io/writegate-rl/)
+[![ci](https://github.com/bernardosaab/multi-harness-rl-governed-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/bernardosaab/multi-harness-rl-governed-agents/actions/workflows/ci.yml)
+[![pages](https://github.com/bernardosaab/multi-harness-rl-governed-agents/actions/workflows/pages.yml/badge.svg)](https://bernardosaab.github.io/multi-harness-rl-governed-agents/)
 ![python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
 ![license](https://img.shields.io/badge/license-Apache--2.0-green)
 
@@ -34,7 +34,7 @@ Three ideas hold it together:
    engineering, a compiled loop and a router. The held-out harness is reported
    separately, as the paper recommends.
 
-**[Live results and trajectory explorer →](https://bernardosaab.github.io/writegate-rl/)**
+**[Live results and trajectory explorer →](https://bernardosaab.github.io/multi-harness-rl-governed-agents/)**
 
 <!--RESULTS-->
 ## Results (measured)

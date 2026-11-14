@@ -1,7 +1,7 @@
 # Method, and how to read the results
 
 The numbers themselves are generated in [results/REPORT.md](../results/REPORT.md) and on the
-[results site](https://bernardosaab.github.io/writegate-rl/). This page explains how they were produced
+[results site](https://bernardosaab.github.io/multi-harness-rl-governed-agents/). This page explains how they were produced
 and what they can and cannot show.
 
 ## Protocol
