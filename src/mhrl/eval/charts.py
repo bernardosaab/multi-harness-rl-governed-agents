@@ -172,6 +172,10 @@ def lines(
     out.append(
         f'<text x="{left + pw / 2}" y="{height - 8}" text-anchor="middle">{escape(x_label)}</text>'
     )
+    for v in sorted({p[0] for pts in points for p in pts}):
+        out.append(
+            f'<text x="{px(v):.1f}" y="{top + ph + 16:.1f}" text-anchor="middle">{v:g}</text>'
+        )
     for i, pts in enumerate(points):
         if not pts:
             continue
@@ -188,9 +192,15 @@ def lines(
                 f'stroke="var(--surface)" stroke-width="2"><title>{escape(series[i])} '
                 f"{x_label} {a:g}: {y_fmt.format(b)}</title></circle>"
             )
-        a, b = pts[-1]
+    # Direct end labels, nudged apart so equal end values never overlap.
+    ends = sorted(((py(pts[-1][1]), i) for i, pts in enumerate(points) if pts), key=lambda t: t[0])
+    placed: list[float] = []
+    for y, i in ends:
+        y = max(y, placed[-1] + 15) if placed else y
+        placed.append(y)
+        a, b = points[i][-1]
         out.append(
-            f'<text class="label" x="{px(a) + 10:.1f}" y="{py(b) + 4:.1f}">'
+            f'<text class="label" x="{px(a) + 10:.1f}" y="{y + 4:.1f}">'
             f"{escape(series[i])} {y_fmt.format(b)}</text>"
         )
     out.append("</svg>")

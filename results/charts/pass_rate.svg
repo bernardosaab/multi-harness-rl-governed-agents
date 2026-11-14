@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 304" width="720" height="304" role="img" aria-label="Tasks solved (read back from the ledger), 95% Wilson CI">
+
+<style>
+  svg { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --grid:#e4e3df;
+        --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; }
+  @media (prefers-color-scheme: dark) {
+    svg { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --grid:#3a3936;
+          --s1:#3987e5; --s2:#d95926; --s3:#199e70; }
+  }
+  text { font: 12px ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+         fill: var(--ink2); }
+  .title { font-size: 14px; font-weight: 600; fill: var(--ink); }
+  .label { fill: var(--ink); }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .ci { stroke: var(--ink2); stroke-width: 1.5; }
+  .bg { fill: var(--surface); }
+</style>
+
+<rect class="bg" width="720" height="304" rx="8"/>
+<text class="title" x="16" y="24">Tasks solved (read back from the ledger), 95% Wilson CI</text>
+<rect x="150" y="36" width="10" height="10" rx="2" fill="var(--s1)"/>
+<text x="164" y="45">seen harnesses</text>
+<rect x="272" y="36" width="10" height="10" rx="2" fill="var(--s2)"/>
+<text x="286" y="45">held-out harness</text>
+<line class="grid" x1="150.0" x2="150.0" y1="52" y2="282"/>
+<text x="150.0" y="296" text-anchor="middle">0%</text>
+<line class="grid" x1="275.0" x2="275.0" y1="52" y2="282"/>
+<text x="275.0" y="296" text-anchor="middle">25%</text>
+<line class="grid" x1="400.0" x2="400.0" y1="52" y2="282"/>
+<text x="400.0" y="296" text-anchor="middle">50%</text>
+<line class="grid" x1="525.0" x2="525.0" y1="52" y2="282"/>
+<text x="525.0" y="296" text-anchor="middle">75%</text>
+<line class="grid" x1="650.0" x2="650.0" y1="52" y2="282"/>
+<text x="650.0" y="296" text-anchor="middle">100%</text>
+<text class="label" x="140" y="75.0" text-anchor="end">Compiled loop</text>
+<g><title>seen: 57.1% solved, 95% CI 39.1%-73.5%, n=28</title><rect x="150" y="58" width="285.7" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="345.4" x2="517.5" y1="64.0" y2="64.0"/><line class="ci" x1="345.4" x2="345.4" y1="60.0" y2="68.0"/><line class="ci" x1="517.5" x2="517.5" y1="60.0" y2="68.0"/>
+<rect x="150" y="57" width="500" height="14" fill="transparent"/></g>
+<text x="523.5" y="68">57.1%</text>
+<g><title>held-out: 57.1% solved, 95% CI 39.1%-73.5%, n=28</title><rect x="150" y="72" width="285.7" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="345.4" x2="517.5" y1="78.0" y2="78.0"/><line class="ci" x1="345.4" x2="345.4" y1="74.0" y2="82.0"/><line class="ci" x1="517.5" x2="517.5" y1="74.0" y2="82.0"/>
+<rect x="150" y="71" width="500" height="14" fill="transparent"/></g>
+<text x="523.5" y="82">57.1%</text>
+<text class="label" x="140" y="119.0" text-anchor="end">Base model</text>
+<g><title>seen: 33.9% solved, 95% CI 27.2%-41.4%, n=168</title><rect x="150" y="102" width="169.6" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="286.0" x2="356.9" y1="108.0" y2="108.0"/><line class="ci" x1="286.0" x2="286.0" y1="104.0" y2="112.0"/><line class="ci" x1="356.9" x2="356.9" y1="104.0" y2="112.0"/>
+<rect x="150" y="101" width="500" height="14" fill="transparent"/></g>
+<text x="362.9" y="112">33.9%</text>
+<g><title>held-out: 17.9% solved, 95% CI 10.0%-29.8%, n=56</title><rect x="150" y="116" width="89.3" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="200.0" x2="299.2" y1="122.0" y2="122.0"/><line class="ci" x1="200.0" x2="200.0" y1="118.0" y2="126.0"/><line class="ci" x1="299.2" x2="299.2" y1="118.0" y2="126.0"/>
+<rect x="150" y="115" width="500" height="14" fill="transparent"/></g>
+<text x="305.2" y="126">17.9%</text>
+<text class="label" x="140" y="163.0" text-anchor="end">Loop engineering</text>
+<g><title>seen: 29.8% solved, 95% CI 23.4%-37.1%, n=168</title><rect x="150" y="146" width="148.8" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="266.8" x2="335.3" y1="152.0" y2="152.0"/><line class="ci" x1="266.8" x2="266.8" y1="148.0" y2="156.0"/><line class="ci" x1="335.3" x2="335.3" y1="148.0" y2="156.0"/>
+<rect x="150" y="145" width="500" height="14" fill="transparent"/></g>
+<text x="341.3" y="156">29.8%</text>
+<g><title>held-out: 28.6% solved, 95% CI 18.4%-41.5%, n=56</title><rect x="150" y="160" width="142.9" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="242.1" x2="357.4" y1="166.0" y2="166.0"/><line class="ci" x1="242.1" x2="242.1" y1="162.0" y2="170.0"/><line class="ci" x1="357.4" x2="357.4" y1="162.0" y2="170.0"/>
+<rect x="150" y="159" width="500" height="14" fill="transparent"/></g>
+<text x="363.4" y="170">28.6%</text>
+<text class="label" x="140" y="207.0" text-anchor="end">Multi-harness RL</text>
+<g><title>seen: 48.8% solved, 95% CI 41.4%-56.3%, n=168</title><rect x="150" y="190" width="244.0" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="356.8" x2="431.5" y1="196.0" y2="196.0"/><line class="ci" x1="356.8" x2="356.8" y1="192.0" y2="200.0"/><line class="ci" x1="431.5" x2="431.5" y1="192.0" y2="200.0"/>
+<rect x="150" y="189" width="500" height="14" fill="transparent"/></g>
+<text x="437.5" y="200">48.8%</text>
+<g><title>held-out: 16.1% solved, 95% CI 8.7%-27.8%, n=56</title><rect x="150" y="204" width="80.4" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="193.5" x2="289.0" y1="210.0" y2="210.0"/><line class="ci" x1="193.5" x2="193.5" y1="206.0" y2="214.0"/><line class="ci" x1="289.0" x2="289.0" y1="206.0" y2="214.0"/>
+<rect x="150" y="203" width="500" height="14" fill="transparent"/></g>
+<text x="295.0" y="214">16.1%</text>
+<text class="label" x="140" y="251.0" text-anchor="end">Routed hybrid</text>
+<g><title>seen: 63.1% solved, 95% CI 55.6%-70.0%, n=168</title><rect x="150" y="234" width="315.5" height="12" rx="3" fill="var(--s1)"/>
+<line class="ci" x1="427.9" x2="500.1" y1="240.0" y2="240.0"/><line class="ci" x1="427.9" x2="427.9" y1="236.0" y2="244.0"/><line class="ci" x1="500.1" x2="500.1" y1="236.0" y2="244.0"/>
+<rect x="150" y="233" width="500" height="14" fill="transparent"/></g>
+<text x="506.1" y="244">63.1%</text>
+<g><title>held-out: 53.6% solved, 95% CI 40.7%-66.0%, n=56</title><rect x="150" y="248" width="267.9" height="12" rx="3" fill="var(--s2)"/>
+<line class="ci" x1="353.5" x2="479.9" y1="254.0" y2="254.0"/><line class="ci" x1="353.5" x2="353.5" y1="250.0" y2="258.0"/><line class="ci" x1="479.9" x2="479.9" y1="250.0" y2="258.0"/>
+<rect x="150" y="247" width="500" height="14" fill="transparent"/></g>
+<text x="485.9" y="258">53.6%</text>
+</svg>

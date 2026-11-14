@@ -135,7 +135,7 @@ def readme_block(summary: dict[str, object]) -> str:
     held = {r["system"]: r for r in sums["held-out"]}
     rows = [
         "| System | Seen harnesses: solved (95% CI) | Held-out harness: solved (95% CI) | "
-        "Turns when solved | Injection followed | Tokens / accepted output |",
+        "Turns when solved (seen) | Injection followed (seen) | Tokens / accepted (seen) |",
         "|---|--:|--:|--:|--:|--:|",
     ]
     for s in summary["systems"]:  # type: ignore[attr-defined]

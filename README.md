@@ -37,7 +37,48 @@ Three ideas hold it together:
 **[Live results and trajectory explorer →](https://OWNER.github.io/REPO/)**
 
 <!--RESULTS-->
+## Results (measured)
+
+Test split: 28 tasks never seen in training. Each agent is run twice per task and harness; the compiled loop is deterministic. Full tables, paired tests and failure clusters are in [results/REPORT.md](results/REPORT.md).
+
+![pass rate](results/charts/pass_rate.svg)
+
+| System | Seen harnesses: solved (95% CI) | Held-out harness: solved (95% CI) | Turns when solved (seen) | Injection followed (seen) | Tokens / accepted (seen) |
+|---|--:|--:|--:|--:|--:|
+| Compiled loop | 57.1% (39.1%-73.5%) | 57.1% (39.1%-73.5%) | 1.50 | 0.0% | 0 |
+| Base model | 33.9% (27.2%-41.4%) | 17.9% (10.0%-29.8%) | 5.11 | 45.8% | 7,069 |
+| Loop engineering | 29.8% (23.4%-37.1%) | 28.6% (18.4%-41.5%) | 3.32 | 50.0% | 7,971 |
+| Multi-harness RL | 48.8% (41.4%-56.3%) | 16.1% (8.7%-27.8%) | 4.00 | 4.2% | 4,848 |
+| Routed hybrid | 63.1% (55.6%-70.0%) | 53.6% (40.7%-66.0%) | 2.42 | 4.2% | 2,318 |
+
+![cost](results/charts/cost.svg)
 <!--/RESULTS-->
+
+### What the numbers say
+
+1. **RL improved the agent on the harnesses it trained on.** Solved went from 33.9% to
+   48.8% (**+14.9 pp**, paired 95% CI +7.7 to +22.0, McNemar p = 0.0002), and from 29.8%
+   with loop engineering to 48.8% (+19.0 pp, p < 0.0001). That came from 10 GRPO steps on
+   an 8 GB laptop GPU.
+2. **The biggest behavioural change was safety-relevant.** The base model attempted the
+   write planted in an invoice memo in 14 of 32 injected episodes; the RL agent did so
+   in **1 of 32**. The gate blocked every attempt either way. RL changed what the agent
+   *tries*; the gate decides what *happens*.
+3. **It got cheaper per outcome.** Tokens per accepted output fell from 7,069 to 4,848
+   (-31%) on seen harnesses, because there were fewer wasted, blocked or escalated
+   episodes.
+4. **It did not transfer to the held-out harness.** On `plaintext`, RL scored 16.1% against
+   the base model's 17.9% (-1.8 pp, p = 1.0). This matches the central finding of
+   arXiv:2609.04518: multi-harness RL buys adaptation to the harnesses you train on, not a
+   portable skill. Loop engineering, by contrast, *did* help on the unseen format
+   (+10.7 pp, p = 0.03): prompts adapt to a new format; a 10-step LoRA does not.
+5. **Best overall: compiled where you can, an agent where you must.** The routed hybrid
+   solved 63.1% on seen and 53.6% on held-out harnesses, at 2,318 tokens per accepted
+   output, a third of the base model's cost. The compiled loop alone gets 57.1% at zero
+   tokens, but it can only skip the long tail.
+6. **The safety property held in every run.** Across 924 evaluated episodes the gate
+   executed 448 SOFT-tier writes and stopped 433 attempts (110 HARD, 101 CRITICAL, 222
+   invalid or violating). **No HARD or CRITICAL write executed.**
 
 ## Quickstart
 

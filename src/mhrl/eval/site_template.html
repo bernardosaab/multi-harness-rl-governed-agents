@@ -135,12 +135,14 @@ function row(sys, scope) { return (S.summaries[scope] || []).find(r => r.system 
   const out = [];
   const best = (S.summaries.seen || []).filter(r => r.system !== "compiled").sort((a, b) => b.pass_rate - a.pass_rate)[0];
   if (best) out.push([pct(best.pass_rate), `best agent (${L[best.system]}) on seen harnesses`]);
+  const rlSeen = row("rl", "seen"), baseSeen = row("base", "seen");
+  if (rlSeen && baseSeen) out.push([(rlSeen.pass_rate - baseSeen.pass_rate >= 0 ? "+" : "") + (100 * (rlSeen.pass_rate - baseSeen.pass_rate)).toFixed(1) + " pp", "RL vs base on the seen harnesses"]);
   const rl = row("rl", "held-out"), base = row("base", "held-out");
   if (rl && base) out.push([(rl.pass_rate - base.pass_rate >= 0 ? "+" : "") + (100 * (rl.pass_rate - base.pass_rate)).toFixed(1) + " pp", "RL vs base on the held-out harness"]);
   const routed = row("routed", "seen");
   if (routed) out.push([num(routed.tokens_per_accepted), "tokens per accepted output, routed hybrid"]);
   const stopped = DATA.episodes.reduce((n, e) => n + e.log.filter(([ev, d]) => ev === "gate" && !["executed", "replayed"].includes(d.status)).length, 0);
-  out.push([String(stopped), "write attempts stopped by the gate (explorer sample)"]);
+  out.push([String(stopped), "write attempts stopped by the gate"]);
   out.push([String(DATA.episodes.length), "episodes in the explorer"]);
   document.getElementById("tiles").innerHTML = out.map(([v, k]) => `<div class="card tile"><div class="v">${v}</div><div class="k">${esc(k)}</div></div>`).join("");
 })();
