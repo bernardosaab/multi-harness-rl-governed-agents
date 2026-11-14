@@ -21,7 +21,7 @@ done
 for system in rl routed; do
   uv run mhrl eval --system "$system" --model "$MODEL" --adapter "$ADAPTER" --samples "$SAMPLES" --batch-size 16
 done
-uv run mhrl report
+uv run mhrl report --readme README.md
 uv run mhrl site
 uv run mhrl demo --harness react_xml --svg docs/assets/demo.svg
 echo "done: results/REPORT.md, site/index.html"

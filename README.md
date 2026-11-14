@@ -37,6 +37,7 @@ Three ideas hold it together:
 **[Live results and trajectory explorer →](https://OWNER.github.io/REPO/)**
 
 <!--RESULTS-->
+<!--/RESULTS-->
 
 ## Quickstart
 
@@ -100,7 +101,7 @@ flowchart LR
   L -->|read back| V[Verifier] -->|reward| T[GRPO<br/>group = task x harness] -->|LoRA| P
 ```
 
-More in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Decisions and their trade-offs are in
+More in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md); the evaluation protocol and lessons learned are in [docs/RESULTS.md](docs/RESULTS.md). Decisions and their trade-offs are in
 [docs/adr/](docs/adr/):
 [hand-written GRPO](docs/adr/0001-hand-written-grpo.md) ·
 [rewards from the system of record](docs/adr/0002-reward-from-the-system-of-record.md) ·

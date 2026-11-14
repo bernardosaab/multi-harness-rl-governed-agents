@@ -114,7 +114,11 @@ def _train(args: argparse.Namespace) -> int:
 def _report(args: argparse.Namespace) -> int:
     from mhrl.eval.report import build_report
 
-    path = build_report(Path(args.results), Path(args.prices) if args.prices else None)
+    path = build_report(
+        Path(args.results),
+        Path(args.prices) if args.prices else None,
+        Path(args.readme) if args.readme else None,
+    )
     console.print(f"[green]wrote {path}[/green]")
     return 0
 
@@ -176,6 +180,7 @@ def build_parser() -> argparse.ArgumentParser:
     r = sub.add_parser("report", help="write results/REPORT.md and charts")
     r.add_argument("--results", default="results")
     r.add_argument("--prices", default="configs/prices.toml")
+    r.add_argument("--readme", help="also regenerate the README results section")
     r.set_defaults(fn=_report)
 
     s = sub.add_parser("site", help="build the static results + trajectory explorer site")

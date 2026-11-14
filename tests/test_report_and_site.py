@@ -73,6 +73,17 @@ def test_report_is_written_with_tables_and_charts(results: Path) -> None:
     assert summary["systems"] == ["compiled", "base", "rl"]
 
 
+def test_readme_block_is_regenerated_between_markers(results: Path, tmp_path: Path) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text("intro\n<!--RESULTS-->\nstale numbers\n<!--/RESULTS-->\noutro\n")
+    build_report(results, readme=readme)
+    text = readme.read_text(encoding="utf-8")
+    assert "stale numbers" not in text and "| Multi-harness RL |" in text
+    assert text.startswith("intro\n") and text.endswith("outro\n")
+    build_report(results, readme=readme)  # idempotent
+    assert readme.read_text(encoding="utf-8") == text
+
+
 def test_site_inlines_data_and_charts(results: Path, tmp_path: Path) -> None:
     path = build_site(results, tmp_path / "site")
     html = path.read_text(encoding="utf-8")

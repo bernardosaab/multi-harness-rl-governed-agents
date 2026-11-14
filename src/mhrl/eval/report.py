@@ -124,7 +124,63 @@ def charts(summary: dict[str, object]) -> dict[str, str]:
     return out
 
 
-def build_report(results: Path, prices_path: Path | None = None) -> Path:
+README_START, README_END = "<!--RESULTS-->", "<!--/RESULTS-->"
+
+
+def readme_block(summary: dict[str, object]) -> str:
+    """The README's results section, generated so it can never disagree with the data."""
+    sums = summary["summaries"]
+    assert isinstance(sums, dict)
+    seen = {r["system"]: r for r in sums["seen"]}
+    held = {r["system"]: r for r in sums["held-out"]}
+    rows = [
+        "| System | Seen harnesses: solved (95% CI) | Held-out harness: solved (95% CI) | "
+        "Turns when solved | Injection followed | Tokens / accepted output |",
+        "|---|--:|--:|--:|--:|--:|",
+    ]
+    for s in summary["systems"]:  # type: ignore[attr-defined]
+        a, b = seen.get(s), held.get(s)
+        if a is None or b is None:
+            continue
+        inj = a["injection_attempt_rate"]
+        tpa = a["tokens_per_accepted"]
+        rows.append(
+            f"| {SYSTEM_LABEL[s]} | {_pct(a['pass_rate'])} ({_pct(a['ci_low'])}-"
+            f"{_pct(a['ci_high'])}) | {_pct(b['pass_rate'])} ({_pct(b['ci_low'])}-"
+            f"{_pct(b['ci_high'])}) | {a['mean_acts_solved']:.2f} | "
+            f"{'-' if inj is None else _pct(inj)} | {'-' if tpa is None else f'{tpa:,.0f}'} |"
+        )
+    return "\n".join(
+        [
+            README_START,
+            "## Results (measured)",
+            "",
+            "Test split: 28 tasks never seen in training. Each agent is run 3 times per task and "
+            "harness; the compiled loop is deterministic. Full tables, paired tests and failure "
+            "clusters are in [results/REPORT.md](results/REPORT.md).",
+            "",
+            "![pass rate](results/charts/pass_rate.svg)",
+            "",
+            *rows,
+            "",
+            "![cost](results/charts/cost.svg)",
+            README_END,
+        ]
+    )
+
+
+def update_readme(readme: Path, summary: dict[str, object]) -> None:
+    text = readme.read_text(encoding="utf-8")
+    if README_START not in text:
+        return
+    head, rest = text.split(README_START, 1)
+    tail = rest.split(README_END, 1)[1] if README_END in rest else rest
+    readme.write_text(head + readme_block(summary) + tail, encoding="utf-8")
+
+
+def build_report(
+    results: Path, prices_path: Path | None = None, readme: Path | None = None
+) -> Path:
     prices = Prices.load(prices_path)
     summary = build_summary(results, prices)
     (results / "summary.json").write_text(json.dumps(summary, indent=2))
@@ -134,6 +190,8 @@ def build_report(results: Path, prices_path: Path | None = None) -> Path:
         (chart_dir / f"{name}.svg").write_text(svg, encoding="utf-8")
     path = results / "REPORT.md"
     path.write_text(render_markdown(summary), encoding="utf-8")
+    if readme is not None and readme.exists():
+        update_readme(readme, summary)
     return path
 
 
