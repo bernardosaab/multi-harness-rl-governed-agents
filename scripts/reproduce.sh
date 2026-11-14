@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# End-to-end reproduction on one CUDA GPU (about 3 hours on an 8 GB laptop GPU).
+# End-to-end reproduction on one CUDA GPU (about 2 hours on an 8 GB laptop GPU).
 # Usage: bash scripts/reproduce.sh [--skip-train]
 set -euo pipefail
 export PYTHONIOENCODING=utf-8
 MODEL="${MODEL:-Qwen/Qwen3-1.7B}"
-SAMPLES="${SAMPLES:-3}"
+SAMPLES="${SAMPLES:-2}"
 ADAPTER="runs/grpo/final"
 
 uv sync --extra train

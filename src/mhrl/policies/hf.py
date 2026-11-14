@@ -17,7 +17,7 @@ class HFPolicy:
         *,
         adapter: str | Path | None = None,
         temperature: float = 0.7,
-        max_new_tokens: int = 160,
+        max_new_tokens: int = 96,
         batch_size: int = 16,
         model: Any = None,
         tokenizer: Any = None,

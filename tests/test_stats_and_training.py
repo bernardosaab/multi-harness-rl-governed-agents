@@ -73,12 +73,13 @@ def test_masked_policy_gradient_on_a_tiny_model() -> None:
             self.emb = torch.nn.Embedding(11, 8)
             self.out = torch.nn.Linear(8, 11)
 
-        def forward(self, input_ids: object) -> object:
+        def forward(self, input_ids: object, logits_to_keep: int = 0) -> object:
             class Out:
                 pass
 
             o = Out()
-            o.logits = self.out(self.emb(input_ids))  # type: ignore[attr-defined]
+            full = self.out(self.emb(input_ids))
+            o.logits = full[:, -logits_to_keep:, :] if logits_to_keep else full  # type: ignore[attr-defined]
             return o
 
     torch.manual_seed(0)
@@ -86,6 +87,11 @@ def test_masked_policy_gradient_on_a_tiny_model() -> None:
     s = Sample(prompt_ids=(1, 2, 3, 4), completion_ids=(5, 6), advantage=1.0)
     logp = completion_logprobs(model, s)
     assert logp.shape == (2,)  # loss mask: completion tokens only
+    # Same values as computing the full-sequence log-softmax and slicing the completion.
+    ids = torch.tensor([[1, 2, 3, 4, 5, 6]])
+    full = torch.log_softmax(model(ids).logits[:, :-1, :], -1)
+    ref = full.gather(-1, ids[:, 1:].unsqueeze(-1)).squeeze(-1)[0, -2:]
+    assert torch.allclose(logp.detach(), ref.detach(), atol=1e-6)
     assert torch.all(logp <= 0)
     # With ref == policy the KL term is exactly zero and the loss is -A * sum(logp).
     loss = sample_loss(logp, logp.detach(), 1.0, beta=0.5)

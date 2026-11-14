@@ -46,7 +46,7 @@ class TrainConfig:
     lora_r: int = 16
     lora_alpha: int = 32
     temperature: float = 1.0
-    max_new_tokens: int = 160
+    max_new_tokens: int = 96
     gen_batch_size: int = 24
     seed: int = 0
     out_dir: str = "runs/grpo"
@@ -83,14 +83,19 @@ def samples_from(episodes: list[Episode], advantages: list[float]) -> list[Sampl
 
 
 def completion_logprobs(model: torch.nn.Module, sample: Sample) -> torch.Tensor:
-    """Log-probabilities of the completion tokens only (the loss mask)."""
+    """Log-probabilities of the completion tokens only (the loss mask).
+
+    Only the last ``n + 1`` positions' logits are materialised (``logits_to_keep``):
+    with a ~150k vocabulary, full-sequence fp32 logits for a 2k-token multi-turn prompt
+    are ~1.2 GB per copy and ran an 8 GB card out of memory.
+    """
     device = next(model.parameters()).device
-    ids = torch.tensor([list(sample.prompt_ids) + list(sample.completion_ids)], device=device)
-    logits = model(input_ids=ids).logits[:, :-1, :].float()
-    targets = ids[:, 1:]
-    logp = torch.log_softmax(logits, dim=-1).gather(-1, targets.unsqueeze(-1)).squeeze(-1)
     n = len(sample.completion_ids)
-    return logp[0, -n:]
+    ids = torch.tensor([list(sample.prompt_ids) + list(sample.completion_ids)], device=device)
+    logits = model(input_ids=ids, logits_to_keep=n + 1).logits[:, -(n + 1) : -1, :].float()
+    targets = ids[:, -n:]
+    logp = torch.log_softmax(logits, dim=-1).gather(-1, targets.unsqueeze(-1)).squeeze(-1)
+    return logp[0]
 
 
 def sample_loss(
@@ -171,6 +176,7 @@ def train(cfg: TrainConfig, log: object = print) -> Path:
         samples = samples_from(episodes, advs)
         n_tokens = sum(len(s.completion_ids) for s in samples) or 1
 
+        torch.cuda.empty_cache()  # return generation's KV cache before the backward pass
         model.train()
         opt.zero_grad(set_to_none=True)
         total = 0.0

@@ -50,7 +50,11 @@ def _policy(args: argparse.Namespace, adapter: str | None) -> Policy:
     from mhrl.policies.hf import HFPolicy
 
     return HFPolicy(
-        args.model, adapter=adapter, temperature=args.temperature, batch_size=args.batch_size
+        args.model,
+        adapter=adapter,
+        temperature=args.temperature,
+        batch_size=args.batch_size,
+        max_new_tokens=args.max_new_tokens,
     )
 
 
@@ -166,7 +170,8 @@ def build_parser() -> argparse.ArgumentParser:
     e.add_argument("--model", default="Qwen/Qwen3-1.7B")
     e.add_argument("--adapter")
     e.add_argument("--harnesses", default=",".join(ALL_HARNESSES))
-    e.add_argument("--samples", type=int, default=3)
+    e.add_argument("--samples", type=int, default=2)
+    e.add_argument("--max-new-tokens", type=int, default=96)
     e.add_argument("--temperature", type=float, default=0.7)
     e.add_argument("--batch-size", type=int, default=24)
     e.add_argument("--limit", type=int, default=0, help="first N test tasks only")

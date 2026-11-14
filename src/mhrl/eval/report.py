@@ -155,7 +155,7 @@ def readme_block(summary: dict[str, object]) -> str:
             README_START,
             "## Results (measured)",
             "",
-            "Test split: 28 tasks never seen in training. Each agent is run 3 times per task and "
+            "Test split: 28 tasks never seen in training. Each agent is run twice per task and "
             "harness; the compiled loop is deterministic. Full tables, paired tests and failure "
             "clusters are in [results/REPORT.md](results/REPORT.md).",
             "",

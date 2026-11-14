@@ -10,12 +10,13 @@ and what they can and cannot show.
 |---|---|
 | Base model | `Qwen/Qwen3-1.7B`, non-thinking mode, bf16 |
 | Adapter | LoRA r=16, alpha=32, all attention and MLP projections |
-| Training | GRPO, `configs/train_small.toml`: 24 steps × 6 tasks × 3 harnesses × 4 rollouts, temperature 0.8, lr 5e-5, KL β=0.02 against the adapter-disabled model |
+| Training | GRPO, `configs/train_small.toml`: 10 steps × 6 tasks × 3 harnesses × 4 rollouts, temperature 0.8, lr 5e-5, KL β=0.02 against the adapter-disabled model |
+| Run history | steps 1-2 ran with `max_new_tokens=160`; the run was resumed from the step-2 checkpoint with 96 tokens and capped at 10 steps to fit the time budget (each step was taking 5-15 min on the 8 GB card) |
 | Training tasks | train split (28 tasks, 7 kinds) |
 | Test tasks | test split (28 tasks): **different instances** with different vendors, amounts and ids, generated from different seeds |
 | Seen harnesses | `json`, `react_xml`, `pycall` |
 | Held-out harness | `plaintext`, never used in training |
-| Samples | 3 per (task, harness) for every model-based system, temperature 0.7; the compiled loop is deterministic |
+| Samples | 2 per (task, harness) for every model-based system, temperature 0.7; the compiled loop is deterministic |
 | Hardware | one RTX 3070 Laptop GPU (8 GB), Windows, no vLLM |
 
 ## Reading the numbers
