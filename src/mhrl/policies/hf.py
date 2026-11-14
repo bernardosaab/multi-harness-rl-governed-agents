@@ -41,7 +41,8 @@ class HFPolicy:
             if adapter is not None:
                 from peft import PeftModel
 
-                model = PeftModel.from_pretrained(model, str(adapter))
+                # Inference only: fold the LoRA into the base weights (same outputs, less memory).
+                model = PeftModel.from_pretrained(model, str(adapter)).merge_and_unload()
         self.model = model
         self.name = name or (f"{model_id}+{Path(adapter).name}" if adapter else model_id)
 
@@ -55,21 +56,40 @@ class HFPolicy:
         return list(self.tokenizer(text, add_special_tokens=False)["input_ids"])
 
     def generate(self, conversations: Sequence[Sequence[Message]]) -> list[Generation]:
+        out: list[Generation] = []
+        for start in range(0, len(conversations), self.batch_size):
+            out += self._generate_resilient(list(conversations[start : start + self.batch_size]))
+        return out
+
+    def _generate_resilient(self, chunk: list[Sequence[Message]]) -> list[Generation]:
+        """On a CUDA out-of-memory error, split the batch in half and retry.
+
+        Long multi-turn conversations late in an episode can outgrow a batch that fit
+        at the start; degrading batch size beats losing an hour-long evaluation.
+        """
         import torch
 
-        out: list[Generation] = []
+        try:
+            return self._generate_batch(chunk)
+        except (torch.OutOfMemoryError, RuntimeError) as e:
+            if "out of memory" not in str(e) or len(chunk) == 1:
+                raise
+            torch.cuda.empty_cache()
+            half = len(chunk) // 2
+            return self._generate_resilient(chunk[:half]) + self._generate_resilient(chunk[half:])
+
+    def _generate_batch(self, chunk: list[Sequence[Message]]) -> list[Generation]:
+        import torch
+
         device = next(self.model.parameters()).device
         pad = self.tokenizer.pad_token_id
-        for start in range(0, len(conversations), self.batch_size):
-            chunk = conversations[start : start + self.batch_size]
-            prompts = [self.prompt_ids(c) for c in chunk]
-            width = max(len(p) for p in prompts)
-            input_ids = torch.tensor([[pad] * (width - len(p)) + p for p in prompts], device=device)
-            mask = torch.tensor(
-                [[0] * (width - len(p)) + [1] * len(p) for p in prompts], device=device
-            )
-            was_training = self.model.training
-            self.model.eval()
+        prompts = [self.prompt_ids(c) for c in chunk]
+        width = max(len(p) for p in prompts)
+        input_ids = torch.tensor([[pad] * (width - len(p)) + p for p in prompts], device=device)
+        mask = torch.tensor([[0] * (width - len(p)) + [1] * len(p) for p in prompts], device=device)
+        was_training = self.model.training
+        self.model.eval()
+        try:
             with torch.no_grad():
                 seqs = self.model.generate(
                     input_ids=input_ids,
@@ -81,12 +101,14 @@ class HFPolicy:
                     top_k=0,
                     pad_token_id=pad,
                 )
+        finally:
             if was_training:
                 self.model.train()
-            for p, row in zip(prompts, seqs[:, width:].tolist(), strict=True):
-                completion = _trim(row, pad, self.tokenizer.eos_token_id)
-                text = self.tokenizer.decode(completion, skip_special_tokens=True)
-                out.append(Generation(text, len(p), len(completion), tuple(p), tuple(completion)))
+        out = []
+        for p, row in zip(prompts, seqs[:, width:].tolist(), strict=True):
+            completion = _trim(row, pad, self.tokenizer.eos_token_id)
+            text = self.tokenizer.decode(completion, skip_special_tokens=True)
+            out.append(Generation(text, len(p), len(completion), tuple(p), tuple(completion)))
         return out
 
 

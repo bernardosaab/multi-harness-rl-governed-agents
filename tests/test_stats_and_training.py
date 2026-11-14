@@ -104,3 +104,24 @@ def test_masked_policy_gradient_on_a_tiny_model() -> None:
     after = float(completion_logprobs(model, s).detach().sum())
     assert after > before
     assert not math.isnan(after)
+
+
+def test_generation_halves_the_batch_on_out_of_memory() -> None:
+    torch = pytest.importorskip("torch")
+    from mhrl.policies.base import Generation
+    from mhrl.policies.hf import HFPolicy
+
+    policy = object.__new__(HFPolicy)  # no model needed: only the retry logic is under test
+    policy.batch_size = 8
+    sizes: list[int] = []
+
+    def fake_batch(chunk: list[object]) -> list[Generation]:
+        sizes.append(len(chunk))
+        if len(chunk) > 2:
+            raise torch.OutOfMemoryError("CUDA out of memory")
+        return [Generation("x", 1, 1) for _ in chunk]
+
+    policy._generate_batch = fake_batch  # type: ignore[method-assign]
+    out = policy.generate([[{"role": "user", "content": str(i)}] for i in range(8)])
+    assert len(out) == 8
+    assert sizes[0] == 8 and max(sizes[1:]) <= 4 and sizes.count(2) == 4
